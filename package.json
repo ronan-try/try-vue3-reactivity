@@ -1,0 +1,21 @@
+{
+  "name": "try-vue3-reactivity",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": "https://github.com/ronan-try/try-vue3-reactivity.git",
+  "author": "Ronan <liruonan@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-typescript": "^7.12.7",
+    "@types/jest": "^26.0.19",
+    "babel-jest": "^26.6.3",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.1.3"
+  }
+}
