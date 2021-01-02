@@ -3,7 +3,7 @@ import {
 } from '../src/ref';
 
 describe('ref', () => {
-  it('case01', () => {
+  it('case01: hold a value', () => {
     const a = ref(1);
     expect(a.value).toBe(1);
 
