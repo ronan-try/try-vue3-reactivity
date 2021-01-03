@@ -1,3 +1,3 @@
-export function reactive (...args): any {
+export function reactive<T> (...args): any {
   console.log('reactive')
 }
