@@ -9,7 +9,7 @@ const observed = new Proxy(arr, {
   },
   set (target, prop, val) {
     console.log('set: ', prop, val);
-    return true;
+    return Reflect.set(target, prop, val);
   }
 })
 
@@ -18,11 +18,9 @@ const observed = new Proxy(arr, {
 // console.log('-------------------');
 
 let baz = { baz: 1};
-observed.push(baz);
+observed.push(...[baz, baz]);
 
-const len = arr.length;
-console.log(arr[len-1]);
-console.log(observed[len-1]);
+console.table(arr);
 
 // {
 //   let arr = [1, 2, 3]
