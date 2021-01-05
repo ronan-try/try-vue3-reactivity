@@ -8,3 +8,11 @@ export function isReactive(obj): boolean {
 
   return !0;
 }
+
+export function toRaw(obj): any {
+  console.log('toRaw')
+}
+
+export function markNonReactive(obj) {
+  
+}
