@@ -4,8 +4,11 @@ import { mutableCollectionHandlers, readonlyCollectionHandlers } from './collect
 import { UnwrapNestedRefs } from './ref';
 import { ReactiveEffect } from './effect';
 
-const isObject = (obj: any) => obj !== null && typeof obj === 'object';
-
+export const isObject = (obj: any) => obj !== null && typeof obj === 'object';
+export const hasOwn = (
+  val: object,
+  key: string | symbol
+) => Object.prototype.hasOwnProperty.call(val, key);
 
 export type Dep = Set<ReactiveEffect>;
 export type KeyToDepMap = Map<string | symbol, Dep>;
