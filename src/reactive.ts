@@ -65,10 +65,10 @@ export function reactive<T>(target: object) {
 
   return createReactiveObject(
     target,
-    rawToReadonly,
-    readonlyToRaw,
-    readonlyHandlers,
-    readonlyCollectionHandlers,
+    rawToReactive,
+    reactiveToRaw,
+    mutableHandlers,
+    mutableCollectionHandlers,
   );
 }
 
