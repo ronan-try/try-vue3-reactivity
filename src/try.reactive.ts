@@ -49,7 +49,8 @@ console.table(arr);
     }
   };
   const proxy = new Proxy(nested, {
-    get (target, prop) {
+    get (target, prop, receiver) {
+      console.log('get receiver: ', receiver == proxy);
       console.log('get: ', prop);
       console.log('get val:', target[prop]);
       return target[prop];
@@ -61,13 +62,13 @@ console.table(arr);
   });
 
   console.log(proxy.foo.bar);
-  console.log(proxy.foo.baz);
-  console.log('我是分割线-------------');
-  proxy.foo.bar = 100;
-  console.log('------------', nested.foo.bar);
-  console.log(proxy.foo.bar);
+  // console.log(proxy.foo.baz);
+  // console.log('我是分割线-------------');
+  // proxy.foo.bar = 100;
+  // console.log('------------', nested.foo.bar);
+  // console.log(proxy.foo.bar);
 
-  console.log('nested == proxy', nested == proxy);
-  console.log('nested.foo == proxy.foo', nested.foo == proxy.foo);
-  console.log('nested.foo.bar == proxy.foo.bar', nested.foo.bar == proxy.foo.bar);
+  // console.log('nested == proxy', nested == proxy);
+  // console.log('nested.foo == proxy.foo', nested.foo == proxy.foo);
+  // console.log('nested.foo.bar == proxy.foo.bar', nested.foo.bar == proxy.foo.bar);
 }
