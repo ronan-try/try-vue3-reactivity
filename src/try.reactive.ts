@@ -72,4 +72,11 @@ console.table(arr);
   // console.log('nested == proxy', nested == proxy);
   // console.log('nested.foo == proxy.foo', nested.foo == proxy.foo);
   // console.log('nested.foo.bar == proxy.foo.bar', nested.foo.bar == proxy.foo.bar);
+
+  console.log('分割线**********************************');
+  Reflect.set(proxy, 'aaaaaaa', '10000000');
+  console.log('分割线---------------------------------');
+  console.log(nested['aaaaaaa']);
+  console.log(proxy['aaaaaaa']);
+  console.log(proxy);
 }
