@@ -44,16 +44,17 @@ console.table(arr);
   console.log('我是分割线');
   const nested = {
     foo: {
-      bar: 1,
+      bar: { zz: 0 },
       baz: 2
     }
   };
   const proxy = new Proxy(nested, {
     get (target, prop, receiver) {
+      console.log('get target: ', target);
       console.log('get receiver: ', receiver === proxy);
       console.log('get: ', prop);
       console.log('get val:', target[prop]);
-      return target[prop];
+      return Reflect.get(target, prop, receiver);
     },
     set (target, prop, val) {
       console.log('set: ', prop, val);
@@ -61,14 +62,14 @@ console.table(arr);
     }
   });
 
-  console.log(proxy.foo.bar);
-  console.log(proxy.foo.baz);
+  console.log(proxy.foo.bar.zz);
+  // console.log(proxy.foo.baz);
   console.log('我是分割线-------------');
-  proxy.foo.bar = 100;
-  console.log('------------', nested.foo.bar);
-  console.log(proxy.foo.bar);
+  // proxy.foo.bar = 100;
+  // console.log('------------', nested.foo.bar);
+  // console.log(proxy.foo.bar);
 
-  console.log('nested == proxy', nested == proxy);
-  console.log('nested.foo == proxy.foo', nested.foo == proxy.foo);
-  console.log('nested.foo.bar == proxy.foo.bar', nested.foo.bar == proxy.foo.bar);
+  // console.log('nested == proxy', nested == proxy);
+  // console.log('nested.foo == proxy.foo', nested.foo == proxy.foo);
+  // console.log('nested.foo.bar == proxy.foo.bar', nested.foo.bar == proxy.foo.bar);
 }
