@@ -41,7 +41,8 @@ export function ref(raw: any) {
   return v;
 }
 
-export function isRef (val: any): boolean {
+
+export function isRef (val: any): val is Ref<any> {
   // if (!val) return false; // 牛逼 null undefined
   // if((val as Ref)[refSymbol]) return true;
   // return false;
