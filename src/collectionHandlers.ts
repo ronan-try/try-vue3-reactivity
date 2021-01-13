@@ -112,6 +112,45 @@ function set(this: any, key: any, value: any) {
   return result;
 }
 
+function  deleteEntry(this: any, key: any) {
+  // 拿到original
+  const target = toRaw(this);
+
+  // 这里又是this，不是target
+  const proto: any = Reflect.getPrototypeOf(this);
+
+  const hadKey = proto.has.call(target, key);
+  const oldValue = proto.get ? proto.get.call(target, key) : void 0;
+
+  const result = proto.delete.call(target, key);
+
+  hadKey && trigger(target, OperationTypes.DELETE, key);
+
+  return result;
+}
+
+// node: 写到这里发现，Map 和 Set 支持的方法有差异，看看一会儿怎么export出去
+
+function clear(this: any) {
+  const target = toRaw(this);
+
+  // 想想为什么 这里用this，
+  // 为什么 .call 用target
+  const proto: any = Reflect.getPrototypeOf(this);
+
+  const hadItems = target.size !== 0;
+
+  // 这是干什么？看样子是留给dev阶段使用的
+  // 咱不需要
+  // const oldTarget = target instanceof Map ? new Map(target) : new Set(target);
+
+  const result = proto.clear.call(target);
+
+  hadItems && trigger(target, OperationTypes.CLEAR);
+
+  return result;
+}
+
 export const mutableCollectionHandlers: ProxyHandler<any> = {}
 
 export const readonlyCollectionHandlers: ProxyHandler<any> = {}
