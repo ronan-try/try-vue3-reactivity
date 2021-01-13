@@ -72,6 +72,46 @@ function size(target: any) {
   // 我还以为要proto.size.call()呢，仔细想想size是属性
 }
 
+function add(this: any, value: any) {
+  // 拿到原料 original
+  value = toRaw(value);
+  const target = toRaw(this);
+
+  // 注意：这里使用了this，没有使用target
+  const proto: any = Reflect.getPrototypeOf(this);
+
+  const hadKey = proto.has.call(target, value);
+  const result = proto.add.call(target, value);
+
+  if (!hadKey) trigger(target, OperationTypes.ADD, value);
+
+  return result;
+}
+
+function set(this: any, key: any, value: any) {
+  value = toRaw(value);
+  const target = toRaw(this);
+  // key 不用toRaw吗？
+
+  // 注意这里用的是this，不是target
+  const proto: any = Reflect.getPrototypeOf(this);
+  // 这里为啥用target？？？？？
+  const hadKey = proto.has.call(target, key);
+  const oldValue = proto.get.call(target, key);
+
+  const result = proto.set.call(target, key, value);
+
+  if(value !== oldValue) {
+    if (!hadKey) {
+      trigger(target, OperationTypes.SET, key);
+    } else {
+      trigger(target, OperationTypes.ADD, key);
+    }
+  }
+
+  return result;
+}
+
 export const mutableCollectionHandlers: ProxyHandler<any> = {}
 
 export const readonlyCollectionHandlers: ProxyHandler<any> = {}
