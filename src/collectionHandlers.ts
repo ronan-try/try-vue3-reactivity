@@ -204,6 +204,70 @@ function createIterableMethod(method: string | symbol, isReadonly: boolean) {
   }
 }
 
-export const mutableCollectionHandlers: ProxyHandler<any> = {}
+function createReadonlyMethod (method: Function, type: OperationTypes) {
+  return function (this: any, ...args:any[]) {
+    if (LOCKED) {
+      return type === OperationTypes.DELETE ? false : this;
+    } else {
+      return method.apply(this, args);
+    }
+  }
+}
 
-export const readonlyCollectionHandlers: ProxyHandler<any> = {}
+const mutableInstrumentations: any = {
+  get(key: any) {
+    return get(this, key, toReactive)
+  },
+  get size () {
+    return size(this);
+  },
+  has,
+  add,
+  set,
+  delete: deleteEntry,
+  clear,
+  forEach: createForEach(false)
+}
+
+const readonlyInstumentions: any = {
+  get(key: any) {
+    return get(this, key, toReadonly);
+  },
+  get size() {
+    return size(this);
+  },
+  has,
+  add: createReadonlyMethod(add, OperationTypes.ADD),
+  set: createReadonlyMethod(set, OperationTypes.SET),
+  delete: createReadonlyMethod(deleteEntry, OperationTypes.DELETE),
+  clear: createReadonlyMethod(clear, OperationTypes.CLEAR),
+  forEach: createForEach(true)
+}
+
+const iteratorMethods = ['keys', 'values', 'entries', Symbol.iterator];
+iteratorMethods.forEach(method => {
+  mutableInstrumentations[method] = createIterableMethod(method, false);
+  readonlyInstumentions[method] = createIterableMethod(method, true);
+});
+
+
+function createInstrumentationGetter(instrumentations: any) {
+  return function getInstrumented(
+    target: any,
+    key: string | symbol,
+    receiver: any
+  ) {
+    target = 
+      hasOwn(instrumentations, key) && key in target ? instrumentations : target;
+    
+    return Reflect.get(target,key, receiver);
+  }
+}
+
+export const mutableCollectionHandlers: ProxyHandler<any> = {
+  get: createInstrumentationGetter(mutableInstrumentations)
+}
+
+export const readonlyCollectionHandlers: ProxyHandler<any> = {
+  get: createInstrumentationGetter(readonlyInstumentions)
+}
