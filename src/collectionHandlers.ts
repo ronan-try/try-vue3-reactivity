@@ -151,6 +151,59 @@ function clear(this: any) {
   return result;
 }
 
+function createForEach(isReadonly: boolean) {
+  return function forEach(this: any, callback: Function, thisArs?: any) {
+    const observed = this;
+    const target = toRaw(this);
+    // 为什么？？？ 这里又是用target？ 上面的方法都是this呢？
+    // 需要自己实验一下 Proxy后的obj 的 proto
+    const proto: any = Reflect.getPrototypeOf(target);
+
+    const wrap = isReadonly ? toReadonly : toReactive;
+
+    track(target, OperationTypes.ITERATE);
+
+    function wrappedCallback(value: any, key: any) {
+      return callback.call(observed, wrap(value), wrap(key), observed);
+    }
+
+    return proto.forEach.call(target, wrappedCallback, thisArs);
+  }
+}
+
+function createIterableMethod(method: string | symbol, isReadonly: boolean) {
+  return function(this: any, ...args: any[]) {
+    const target = toRaw(this);
+
+    const proto: any = Reflect.getPrototypeOf(target);
+
+    // Map 属于键值对，Set属于数组
+    const isPair =
+      method === 'entries' ||
+      (method === Symbol.iterator && target instanceof Map);
+
+    const innerIterator = proto[method].apply(target, args);
+    const wrap = isReadonly ? toReadonly : toReactive;
+
+    track(target, OperationTypes.ITERATE);
+
+    return {
+      next() {
+        const { value, done } = innerIterator.next();
+        return done
+          ? { value, done }
+          : {
+              value: isPair ? [wrap(value[0]), wrap(value[1])] : wrap(value),
+              done
+          }
+      },
+      [Symbol.iterator]() {
+        return this;
+      }
+    }
+  }
+}
+
 export const mutableCollectionHandlers: ProxyHandler<any> = {}
 
 export const readonlyCollectionHandlers: ProxyHandler<any> = {}
