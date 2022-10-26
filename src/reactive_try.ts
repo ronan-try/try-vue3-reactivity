@@ -1,6 +1,6 @@
-
+const bar = { bar: 2 };
 const arr = [];
-[].push.call(arr, {foo: 1}, {bar: 2});
+[].push.call(arr, { foo: 1 }, bar);
 const observed = new Proxy(arr, {
   get (target, prop) {
     console.log('get: ', prop);
@@ -14,6 +14,8 @@ const observed = new Proxy(arr, {
 })
 
 observed[0] = 1000;
+
+observed.includes(bar);
 
 // // console.log(arr[0]);
 // // console.log(observed[0]);
